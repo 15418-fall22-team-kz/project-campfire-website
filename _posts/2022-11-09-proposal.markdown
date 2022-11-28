@@ -159,5 +159,5 @@ Given that we hope to parallelize our code with OpenMP, we believe that the GHC/
 - Week 4 (11/28 to 12/4): Finish working on the sequential multi-granularity simulation (Note, this week is a little bit light on work because Andrew has many graduate school applications due this week. We will make up for it by working extra the next week).
 - Week 5 (12/5 to 12/11): Parallelize the simulation with OpenMP. Find a simple chemical reaction with known parameters (experimentally determined in the lab), and use this reaction to test the correctness of our simulation.
 - Week 6 (12/12 to 12/18): Perform analysis of the parallel implementation (on the GHC machines). If time allows, perform more complex analysis, look at more complex chemical scenes, and/or measure performance on the PSC machines. Finally, collect the results into the final documentation and prepare for the final presentation.
-- 12/17/2022: Submit the final report
-- 12/18/2022: Project poster session
+- 12/17/2022: Submit the final report.
+- 12/18/2022: Project poster session.
