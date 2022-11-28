@@ -22,7 +22,7 @@ title: Campfire - A Chemical Reaction Simulator with Parallelism
 email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
   Information placeholder
-baseurl: "project-campfire" # the subpath of your site, e.g. /blog
+baseurl: "project-campfire-website" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jekyllrb
 github_username:  jekyll
