@@ -1,0 +1,163 @@
+---
+layout: post
+title:  "Project Proposal"
+date:   2022-11-09 19:44:04 -0500
+categories: announcement
+permalink: project-proposal
+---
+
+Andrew Kubaney (ajkubane)
+
+Haoyu Zhang (haoyuzha)
+
+# Title:
+
+ Chemical Reaction Simulation at Concentration and Particle Granularities with OpenMP
+
+# Webpage:
+
+[https://15418-fall22-team-kz.github.io/project-campfire/](https://15418-fall22-team-kz.github.io/project-campfire/)
+
+# Summary:
+
+Building off the particle simulation from Assignment 3, we are going to create a chemical reaction simulation. This simulation will allow for different granularities (concentration vs. particle) within the same scene, and we will parallelize the simulation with OpenMP.
+
+# Background:
+
+The best way to introduce this simulation is to explain how it differs from the particle simulation from Assignment 3. In Assignment 3, the simulation was of gravitational bodies (particles). In the chemical particle simulation, the gravitational bodies will be replaced with molecules.
+
+In Assignment 3, the particle simulation was a gravity-based particle simulation. As such, Newton’s law of gravity was utilized to compute the force on each particle (according to the assignment 3 writeup), where G is the gravitational constant, $m_i,m_j$ are the masses of particle i and particle j, $\bf{r_i},\bf{r_j}$ are the position vectors of particle i and particle j, and $\parallel{\bf{r_j}} - {\bf{r_i}}\parallel$ is the magnitude of the vector ${\bf{r_j}} - {\bf{r_i}}$:
+
+$${\bf{F_{i,j}}} = \frac{G \cdot m_i \cdot m_j \cdot ({\bf{r_j}} - {\bf{r_i}})}{\parallel{\bf{r_j}} - {\bf{r_i}}\parallel^3}$$
+
+However, at the molecular level, the strength of the gravitational force is dwarfed by the electrostatic force. As such, in the chemical simulation, the gravitational force will be replaced with the electrostatic force. The electrostatic force arises due to interactions between charged particles (charges are integer values, and can be positive or negative). The electrostatic force is attractive between particles that have charges of opposite signs, and it is repulsive between particles that have charges with the same sign. The electrostatic force is summarized by Coulomb’s law, where k is Coulomb’s constant, $q_i,q_j$ are the charges of particle i and particle j, $\bf{r_i},\bf{r_j}$ are the position vectors of particle i and particle j, and $\parallel{\bf{r_j}} - {\bf{r_i}}\parallel$ is the magnitude of the vector ${\bf{r_j}} - {\bf{r_i}}$: (courtesy of [HyperPhysics](http://hyperphysics.phy-astr.gsu.edu/hbase/electric/elefor.html)):
+
+$${\bf{F_{i,j}}} = \frac{k \cdot q_i \cdot q_j \cdot ({\bf{r_j}} - {\bf{r_i}})}{\parallel{\bf{r_j}} - {\bf{r_i}}\parallel^3}$$
+
+In Assignment 3, the per-particle update work was reduced by ignoring particles outside the cull radius. This assumption was reasonable because of the $\frac{1}{r^2}$ (where r is the distance between the particles) dependence for the force. Since Coulomb’s law indicates that the electrostatic force also has a $\frac{1}{r^2}$ dependence, it is reasonable to utilize the same simplification.
+
+The particle simulation from Assignment 3 assumed that the particles were point particles. In other words, it assumed that the particles had no volume. As such, there was no possibility of collisions. Collisions are necessary to simulate chemical reactions, so the chemical particle simulation will introduce collisions between molecules. Subsequently, it will also be necessary to track the radius of each molecule. To reduce the complexity of the implementation, another simplifying assumption will be made: the molecules will be assumed to be spheres. For collisions, we will make an additional simplifying assumption: collisions are [elastic](http://hyperphysics.phy-astr.gsu.edu/hbase/elacol.html) (kinetic energy is conserved). This assumption, along with the [Law of Conservation of Momentum](https://www.grc.nasa.gov/www/k-12/airplane/conmo.html#:~:text=The%20conservation%20of%20momentum%20states,by%20Newton's%20laws%20of%20motion.) (the total momentum before and after the collision is the same) will enable the computation of post-collision particle velocities.
+
+The chemical simulation will support various types of chemical reactions. As an aside, a chemical reaction is a transformation from one or more reactant molecules to one or more product molecules. This chemical simulation will support chemical reactions of the following forms (where A, B, C, and D are molecules):
+
+$$A + B \rightarrow C$$
+
+$$A \rightarrow B + C$$
+
+$$A + B \rightarrow C + D$$
+
+The above background introduces the basics of a particle chemical simulation. However, it is common to simulate chemical reactions at coarser granularities. Chemical reactions are often simulated at the concentration-level. Concentration is typically defined as the number of molecules per unit volume of solvent, but for a two-dimensional simulation, concentration can be defined as the number of molecules per unit area of solvent (the solvent is the chemical that all of the reactants are dissolved in). One well-known algorithm for performing stochastic simulations of chemical reactions at the concentration level is the [Gillespie Algorithm](https://lewiscoleblog.com/gillespie-algorithm). Simpler algorithms may update the concentrations with iterative approaches that approximate the differential equations that describe the changes in concentrations.
+
+There are several cases where it may be useful to have multi-grained chemical simulations (i.e. chemical simulations where certain regions are simulated to the particle-level and other regions are simulated at the concentration level. One example is in the simulation of the chemistry of cells. Cells are massive relative to the molecular scale, so it is not possible to simulate all of the molecules in the cell. If we are interested in a small sub-region of the cell, one option is to disregard the rest of the cell. However, the chemical processes within cells are very interconnected, so disregarding the rest of the cell may lead to inaccurate results. Another option is to simulate most of the chemical reactions in the cell at the concentration level and simulate the region of interest at the particle level. This is the motivation for the chemical simulation described in this proposal. While the cell example will likely be outside the scope of this project, we will select simpler examples that demonstrate that our simulation has the capability to be scaled to more complicated examples.
+
+Before presenting the pseudo-code for the simulation algorithm, there is one last simplifying assumption that is important to discuss. This chemical simulation will not explicitly simulate solvent molecules (one example of a solvent is water). This is because solvent molecules typically greatly outnumber the reactants. Note, the simulation will not be conducted with the absence of solvent; there are ways to account for the solvent (without simulating the solvent molecules) in the computation of the electrostatic force and the diffusion rate (rate of particle movement) out of the concentration regions.
+
+The following pseudo-code provides a high-level overview of the algorithm that we hope to implement.
+
+```c
+for each simulation step i:
+	build a quadTree QT of all particles
+	for each simulation region r:
+		if (r == particle region):
+			for each particle p in r:
+				compute the electrostatic force on each particle p with QT and based on
+					the concentrations of nearby concentration regions
+				compute any possible collision
+				if (collision occurred)
+					determine if reaction should occur
+				update p based on force, collision, and reaction
+				if (new p in concentration region r'):
+					stop tracking p explicity and fold p into the concentrations in r'
+		else if (r == concentration region):
+			for each molecule type mt in r:
+				update the concentration of mt
+				for surrounding regions r':
+					compute the flow of particles out of region r based on diffusion
+					if (r' == particle region):
+						create particles stoichastically and add to r'
+					if (r' == concentration region):
+						update concentrations of r'
+					update the concentratoin of mt based on the out flow
+```
+
+There are multiple facets of this algorithm that will naturally benefit from parallelization. First, it will be beneficial to parallelize the simulation over the regions in the scene. Within each region, there are also several opportunities for parallelism. Specifically, in the particle regions, parallelizing over particles will be beneficial (specifically because the updates only depend on the previous state). In the concentration region, if there are many chemical reactions, it will be beneficial to parallelize over each reaction, since there are no dependencies between reactions in a single time step. Finally, it will be beneficial to parallelize the interactions between the particle and concentration regions. In order to have the concentration regions properly affect the particle regions, it will be necessary to do a significant amount of computation, and it is likely that this computation will be parallelizable (at least over each concentration region).
+
+# The Challenge:
+
+As described above, many changes need to be made to turn the particle simulation from Assignment 3 into the chemical reaction multi-granularity simulation. However, most of these changes are more time consuming than they are difficult (switching to the electrostatic force, adding collisions, etc.). Otherwise, there are three main challenges for this project:
+
+- First, it is difficult to mesh together the particle and concentration simulations.
+    - Since we are not working off a known chemical simulation algorithm for the multi-granularity simulation, there are several non-trivial implementation details to work out (how do we allow for interactions between the regions of different granularity). This is further complicated by that there are multiple ways to model the interactions between the regions of different granularities (since we are not working off a reference implementation, we have to choose between these ways), and each of them will have tradeoffs in terms of accuracy and performance.
+- Second, the characteristics of the workload make the parallelization of the algorithm difficult:
+    - The workload is unbalanced. The chemical simulation will allow for some regions to be simulated to the molecule-level and other regions to be simulated to the concentration-level. We anticipate that the concentration-level simulations will have drastically lower workloads than the molecule-level simulations. As such, it will be challenging to find a distribution strategy that balances the work (one question is: should we have some of the processors only work on concentration simulation, while the others work on the particle simulation, or should each processor do some of both?).
+    - Without additional modification, the memory accesses in the molecule-granularity regions simulation will not have good locality. In our solution to Assignment 3, the particles were not spatially assigned to each processor (instead, we assigned the particles in the order that they appeared in the initial particle vector). For the chemical simulation, there is even more potential for locality (than the particle simulation from Assignment 3), since many of the molecule updates will rely on spatial proximity to different concentration-simulated regions (in simpler terms, more of the work for molecule updating relies on spatial proximity when compared with Assignment 3). As such, it may make sense to partition the particles based on spatial proximity.
+    - Relative to the particle simulation in Assignment 3, this chemical simulation will require additional synchronization. Specifically, if we partition the molecules spatially, then we have to be careful to ensure that a pair of colliding molecules only reacts once (this could be an issue if two molecules overlap a boundary in the spatial partition). As such, it will be necessary to synchronize between processors that are working on boundary particles. This complicates the implementation.
+    - We are not as worried about the communication to computation ratio, since we believe that the chemical simulation will be even more compute-heavy than the Assignment 3 particle simulation (and we observed that the simulateStep function from the particle simulation in Assignment 3 was not communication limited for many of the scenes).
+- Third, while the properties of the GHC and PSC machines benefit the parallelization, they introduce additional complexities.
+    - Specifically, the GHC and PSC machines support a shared address space model. As such, each of the processors will be querying the same data structures. As with Assignment 3, and especially because our simulation is more complicated, we must be careful to schedule the work in a way that avoids communication cache misses.
+        - Note, for reasons discussed in section **Platform Choice** below, we do not believe that it will be beneficial to avoid this communication cache misses issue by using MPI or CUDA to parallelize the algorithm.
+    - Otherwise, we do not anticipate too much difficult from the properties of the systems.
+
+Overall, we hope to learn how to parallelize multi-grained simulations.
+
+# Resources:
+
+We plan to start with the 15-418 Assignment 3 code base (and specifically, from our solution), which will be modified to allow for chemical simulation and for simulation of different granularities in the same scene. We will use OpenMP to parallelize the simulation. We plan to run our code on the GHC machines. If time allows, we will evaluate the performance of our code on the PSC machines.
+
+# Goals and Deliverables:
+
+Below, we describe the goals and deliverables associated with the chemical simulation. We also present some explanations for the difficulty and achievability of each goal.
+
+## Plan to Achieve
+
+1. Convert the particle simulation to the chemical molecule simulation.
+    1. We believe that this goal is achievable because many of the changes to the particle simulation are relatively simple.
+2. Implement simulation for concentration regions.
+    1. We believe that this goal is simple because there are several well-known algorithms for updating concentrations.
+3. Allow for scenes to have both molecule and concentration regions.
+    1. This goal will be the trickiest.  The crucial difficulty is determining the way in which concentration regions affect particle regions and vice versa. Although this is not straightforward, with enough effort (we plan to spend a significant amount of effort here), we should be able to figure out a reasonable strategy for interfacing regions with varied granularities.
+4. Parallelize this code with OpenMP.
+    1. Once we have the sequential code for the multi-granularity simulation, we believe that this will be achievable because OpenMP offers some powerful yet simple primitives for parallelization (although we will have some more complex work distribution that may require deviation from these primitives).
+5. Use a simple chemical reaction (one idea is bleach and red dye) to test the correctness of our implementation.
+    1. Once the above goals are completed, this goal will be relatively simple. It will involve a small amount of research to find experimentally determined parameters. Then, we will plug the parameters into our simulation and compare the results.
+6. Analyze the code. Measure the performance (speedup, memory accesses, etc.) on the GHC machines.
+    1. Measuring the performance of the code is relatively easy once the parallel version is complete (inserting timing code and using perf to determine cache misses can be done relatively quickly). As such, we are confident that we complete this goal if we create a functional parallelized chemical simulation.
+
+## Hope to Achieve
+
+1. More advanced profiling of threads (looking at data, sync, busy times).
+    1. This will involve placing many different timers throughout the code, and running the program with differing numbers of cores. This is relatively straightforward, and we implemented similar timing code on Assignment 4. The only reason we wouldn’t complete this goal is because of time restrictions.
+2. Make more advanced scenes with more chemical reactions.
+    1. The completion of this goal is only limited by the amount of time that we have. We plan for our simulation to be general, so simulating more advanced scenes will not require additional coding. As such, given enough time, this goal will be achievable.
+3. Test our code on the PSC machines. Compare the performance to the performance on the GHC machines.
+    1. Again, this goal is not inherently difficult. We do not anticipate the need for any changes to the code in order to run on the PSC machines, and we have experience working with these machines from assignments 3 and 4. We will be able to complete this analysis given enough time.
+
+## If the project goes slower than anticipated:
+
+1. Additional simplifying assumptions will be added to improve the pace of the project.
+    1. If the project is progressing more slowly than we expect, we will increase the number of simplifying assumptions that we make. While this is likely to hurt the accuracy of the simulation, we would prefer to have a less accurate but functioning solution than a non-functional, incomplete solution. Note, chemical simulations are notoriously difficult, and most research-level simulations involve quantum mechanics (which is outside the scope of this project). Simulations that do not account for quantum effects often have mediocre accuracy, so we do not anticipate high accuracy from our simulation. As such, are not concerned if additional simplifying assumptions need to be made.
+
+## Poster Session Demo
+
+At the poster session, our live demo will consist of two parts. First, we hope to show a visual representation of the multi-granularity chemical simulation on the bleach and red dye reaction. Then, we will display speedup graphs that display the speedup of our code on multiple processors vs. our code on one processor.
+
+# Platform Choice:
+
+We believe that OpenMP is the appropriate choice for parallelization. The creation of the algorithm for the multi-granularity simulation is not trivial. As such, the relative ease of parallelization offered by OpenMP will help to balance the difficulty of creating the algorithm. Furthermore, when we completed the particle simulation with MPI in Assignment 4, there was no clear advantage in simulation time over our OpenMP implementation. As such, we believe that OpenMP is a reasonable choice. Additionally, the necessary modifications to the particle simulation (in order to turn it into a chemical reaction simulation) would greatly increase the complexity of communication between processors if we decided to use MPI. Thus, we believe that it is wise to avoid MPI.
+
+While it would be interesting to attempt to accelerate the simulation with GPUs, we do not believe that we will have the time to implement the simulation in CUDA. We anticipate that rewriting the simulation in CUDA would be difficult because we do not have a starting point in CUDA (we did not write the initial particle simulation in CUDA for this class) and because the chemical simulation has more dependencies than the particle simulation (so it would be even more difficult to rewrite in a data parallel way).
+
+
+
+Given that we hope to parallelize our code with OpenMP, we believe that the GHC/PSC machines are reasonable. We do not anticipate that our code will scale at high core counts on the PSC machines (mostly because our code for Assignment 3 did not scale on the PSC machines). As such, we do not need more powerful machines. Furthermore, for Assignment 3, we achieved decent speedups on the GHC machines and lower core counts on the PSC machines. As such, we believe that these machines will be sufficient for achieving reasonable speedups.
+
+# Schedule:
+
+- Week 1 (11/7 to 11/13): For the rest of this week, we will focus on finalizing the algorithm for the chemical simulation (including the simplifying assumptions necessary). Then, we will begin converting the particle simulation to the chemical particle simulation (switch to electrostatic force, introduce collisions).
+- Week 2 (11/14 to 11/20): We will finish converting the particle simulation (add reactions), beginning work on the concentration simulation (first looking at simpler algorithms than the Gillespie algorithm).
+- Week 3 (11/21 to 11/27): We will finish work on the concentration simulation (if the simpler algorithms are very easy to implement, then we may try to implement the Gillespie algorithm, and begin working on the sequential multi-granularity simulation (combining the two granularities into one scene).
+- Week 4 (11/28 to 12/4): Finish working on the sequential multi-granularity simulation (Note, this week is a little bit light on work because Andrew has many graduate school applications due this week. We will make up for it by working extra the next week).
+- Week 5 (12/5 to 12/11): Parallelize the simulation with OpenMP. Find a simple chemical reaction with known parameters (experimentally determined in the lab), and use this reaction to test the correctness of our simulation.
+- Week 6 (12/12 to 12/18): Perform analysis of the parallel implementation (on the GHC machines). If time allows, perform more complex analysis, look at more complex chemical scenes, and/or measure performance on the PSC machines. Finally, collect the results into the final documentation and prepare for the final presentation.
+- 12/17/2022: Submit the final report
+- 12/18/2022: Project poster session
