@@ -1,3 +1,10 @@
+---
+layout: post
+title:  "Project Milestone Report"
+categories: announcement
+permalink: project-proposal
+---
+
 # Project Milestone
 
 Andrew Kubaney (ajkubane)
