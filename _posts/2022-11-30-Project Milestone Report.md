@@ -2,7 +2,7 @@
 layout: post
 title:  "Project Milestone Report"
 categories: announcement
-permalink: project-proposal
+permalink: project-milestone-report
 ---
 
 # Project Milestone
