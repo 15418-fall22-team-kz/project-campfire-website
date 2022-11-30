@@ -1,11 +1,3 @@
----
-layout: post
-title:  "Project Milestone Report"
-date:   2022-11-30 20:44:04 -0500
-categories: announcement
-permalink: project-milestone-report
----
-
 # Project Milestone
 
 Andrew Kubaney (ajkubane)
