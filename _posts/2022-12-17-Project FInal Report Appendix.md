@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Project Final Report"
+title:  "Project Final Report Appendix"
 categories: announcement
 permalink: project-final-report-appendix
 ---
