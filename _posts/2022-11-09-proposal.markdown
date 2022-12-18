@@ -5,8 +5,6 @@ date:   2022-11-09 19:44:04 -0500
 categories: announcement
 permalink: project-proposal
 ---
-test
-
 Andrew Kubaney (ajkubane)
 
 Haoyu Zhang (haoyuzha)
