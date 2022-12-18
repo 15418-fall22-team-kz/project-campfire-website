@@ -215,7 +215,7 @@ Figure 8. Speedup vs. number of processors for the quadtree construction (left) 
     
           In order to explain the imperfect speedups for the rest of the scenes, the data from Table 1 are useful. While the percentage of total cache misses ascribed to the simulateForces function was relatively low for all scenes, the percentage of cache misses for the `getParticlesImpl` function were non-negligible. The simulateForces function uses the `getParticlesImpl` to query the quadtree to get all of the particles within the culling radius of a particle. Traversing a quadtree involves pointer traversal between every parent-child pair. This leads to poor spatial locality, which explains the large  number of cache misses.
 
-![Table 1: Percentage of Total Cache Misses for Important Sub-routines and Scenes.](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%209.png)
+/project-campfire-website/assets/images/2022-12-18![Table 1: Percentage of Total Cache Misses for Important Sub-routines and Scenes.](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%209.png)
 
 Table 1: Percentage of Total Cache Misses for Important Sub-routines and Scenes.
 
@@ -223,7 +223,7 @@ Table 1: Percentage of Total Cache Misses for Important Sub-routines and Scenes.
     
           The speedups for the concentration region particle generation sub-routine on the 8-core GHC machines were determined with 1, 2, 4, and 8 processors for each scene, and a plot of the speedups against the number of processors is displayed in Figure 9 below.
 
-![Figure 9. Speedup vs. number of processors for the concentration region particle generation sub-routine on the 8-core GHC machines for each scene.](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%2010.png)
+![Figure 9. Speedup vs. number of processors for the concentration region particle generation sub-routine on the 8-core GHC machines for each scene.](/project-campfire-website/assets/images/2022-12-18/Untitled%2010.png)
 
 Figure 9. Speedup vs. number of processors for the concentration region particle generation sub-routine on the 8-core GHC machines for each scene.
 
@@ -231,7 +231,7 @@ The most disappointing speedup results were found in the concentration region pa
 
           The speedups for the simulation of collisions and reactions on the 8-core GHC machines were determined with 1, 2, 4, and 8 processors for each scene, and a plot of the speedups against the number of processors is displayed in Figure 10 below.
 
-![Figure 10. Speedup vs. number of processors for collision and reaction simulation on 8-core GHC machines for each scene.](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%2011.png)
+![Figure 10. Speedup vs. number of processors for collision and reaction simulation on 8-core GHC machines for each scene.](/project-campfire-website/assets/images/2022-12-18/Untitled%2011.png)
 
 Figure 10. Speedup vs. number of processors for collision and reaction simulation on 8-core GHC machines for each scene.
 
@@ -241,7 +241,7 @@ As displayed in Figure 10 above, the speedups for the collision and reaction sim
     
           In order to determine where there is room for improvement, it is useful to consider the percentage of the total execution time associated with the four sub-routines described above (construction of the quadtree, simulation of electrostatic forces, generation of concentration particles, and simulation of collisions and reactions). These percentages, computed with 1, 2, 4, and 8 processors on the GHC machines, for the random_200k and grid scene are displayed in Table 2 below.
 
-![Table 2: Percentage of Total Execution Time for each Sub-routine](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%2012.png)
+![Table 2: Percentage of Total Execution Time for each Sub-routine](/project-campfire-website/assets/images/2022-12-18/Untitled%2012.png)
 
 Table 2: Percentage of Total Execution Time for each Sub-routine
 
@@ -253,7 +253,7 @@ Table 2 suggests that the most dominant computation is the simulation of electro
 
           The parallelized algorithm was used to simulate the five scenes from the previous section for 200 iterations on the 128-core PSC Bridges-2 machines. These simulations were conducted with 1, 2, 4, 8, 16, 32, 64, and 128 processors, and the speedups were calculated in the same way as the previous section. These speedups are plotted versus the number of processors in Figure 11 below.
 
-![Figure 11. Speedup vs. number of processors for (from left to right): (top) quadtree construction, concentration region particle generation, simulation of collisions and reactions, (bottom) simulation of electrostatic forces, and the total simulation for every scene.](Chemical%20Reaction%20Simulation%20at%20Concentration%20and%20%200afa24542a0048c78e3c20aaa378c1f2/Untitled%2013.png)
+![Figure 11. Speedup vs. number of processors for (from left to right): (top) quadtree construction, concentration region particle generation, simulation of collisions and reactions, (bottom) simulation of electrostatic forces, and the total simulation for every scene.](/project-campfire-website/assets/images/2022-12-18/Untitled%2013.png)
 
 Figure 11. Speedup vs. number of processors for (from left to right): (top) quadtree construction, concentration region particle generation, simulation of collisions and reactions, (bottom) simulation of electrostatic forces, and the total simulation for every scene.
 
