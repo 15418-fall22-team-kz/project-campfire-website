@@ -22,6 +22,8 @@ Andrew Kubaney (ajkubane) and Haoyu Zhang (haoyuzha)
 ## Chemical Background
 
 ​                At the scale of the atoms and molecules (collectively referred to as particles), gravitational forces are small enough to be considered negligible; however, charged particles exert significant electrostatic forces on other charged particles. Similar in form to Newton’s law of gravity, Coulomb’s law defines the electrostatic force of particle i on particle j (${\bf{F_{i,j}}}$)$^1$:
+
+
 $$
 {\bf{F_{i,j}}} = \frac{k \cdot q_i \cdot q_j \cdot ({\bf{r_j}} - {\bf{r_i}})}{\parallel{\bf{r_j}} - {\bf{r_i}}\parallel^3}\tag{eqn. 1}
 $$
@@ -34,7 +36,9 @@ In equation 1 above, k is Coulomb’s constant, $q_i$ and $q_j$ are the charges 
 
 In equation 2 above, $\bf{v_1'}$ and $\bf{v_2'}$ correspond to the final velocities of the two particles, $\bf{v_1}$ and $\bf{v_2}$ correspond to the velocities of the two particles before the collision, $m_i$ and $m_j$ are the masses of the two particles, $\bf{x_1}$ and $\bf{x_2}$ are the position vectors, and $<a,b> = a \cdot b$.
 
-​                 A chemical reaction involves the transformation of particles into different particles. Chemical reactions can be reversible, which means that the transformation can happen in reverse. For the purposes of this project, we consider the following reversible chemical reaction:                                 
+​                 A chemical reaction involves the transformation of particles into different particles. Chemical reactions can be reversible, which means that the transformation can happen in reverse. For the purposes of this project, we consider the following reversible chemical reaction:
+
+​                                 
 $$
 {A + B \leftrightarrow C}\tag{eqn. 3}
 $$
@@ -52,12 +56,13 @@ $$
 The particles on the left side of the arrow are called reactants, and the particles on the right side of the arrow are called products. In the reaction depicted by equation 4 (referred to as the forward reaction), a particle of type A and a particle of type B combine to form a particle of type C. In order for this to occur, a particle of type A must collide with a particle of type B. Note, not every collision between particles of these types results in a reaction. In the real-world, this is dependent on factors such as temperature and orientation of the particles; however, for the purposes of our simulation, it is reasonable to utilize a probability. In the reaction depicted by equation 5 (referred to as the backward reaction), a particle of type C can spontaneously decompose into a particle of type A and a particle of type B. This does not happen on every time step; instead, it is also dictated by a probability.
 
 ​                In two dimensions, the concentration of a molecule of type T (denoted as $[T]$) in a region R can be calculated by dividing the number of molecules of type T in region R by the area of region R. Chemical reactions can also be simulated at a concentration level. Specifically, the rate of forward reaction from equation 4 in a concentration region R can be calculated with the following formula:
+
+
 $$
 {Rate = k_{forward}[A][B]}\tag{eqn. 6}
 $$
 
 In equation 6 above, $k_{forward}$ is the forward reaction rate constant, and $[A]$ and $[B]$ are the concentrations of type A particles and type B particles in region R. Similarly, the rate of the backwards reaction from equation 5 in a concentration region R can be calculated with the following formula: 
-
 $$
 {Rate = k_{backward}[C]}\tag{eqn. 7}
 $$
