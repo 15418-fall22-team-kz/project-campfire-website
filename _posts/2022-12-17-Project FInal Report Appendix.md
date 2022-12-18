@@ -5,7 +5,7 @@ categories: announcement
 permalink: project-final-report-appendix
 ---
 
-# Appendix
+
 
 ![random_100_10x_seq](/project-campfire-website/assets/images/random_100_10x_seq.gif){:class="img-responsive"}
 
