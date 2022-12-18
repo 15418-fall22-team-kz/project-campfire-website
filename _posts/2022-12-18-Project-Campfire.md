@@ -5,7 +5,7 @@ categories: announcement
 permalink: project-final-report
 ---
 
-[Get the PDF]({{ site.url }}/assets/final-report.pdf)
+[Get the PDF](/project-campfire-website/assets/final-report.pdf)
 
 # Chemical Reaction Simulation at Concentration and Particle Granularities with Open MP
 
