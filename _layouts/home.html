@@ -7,9 +7,10 @@ layout: default
   <h1 class="page-heading">{{ page.title }}</h1>
   {%- endif -%}
 
-  <img src="/project-campfire-website/assets/images/campfire.jpg" alt="Campfire" style="width:100%;">
+  <img src="/project-campfire-website/assets/images/campfire.jpg" alt="Campfire"
+    style="width:70%; text-align:center; display:block;">
 
-  <p>
+  <p style="margin-top: 50px;">
     We implemented a two-dimensional chemical reaction simulator that can simulate a combination of concentration
     regions and particle regions in the same scene. Parallelizing this simulator with OpenMP, we were able to achieve a
     total speedup of 5.6 for a 200,000 particle simulation over 200 iterations on the 8-core Gates-Hillman Center (GHC)
