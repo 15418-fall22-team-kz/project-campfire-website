@@ -32,9 +32,15 @@ In equation 1 above, k is Coulomb’s constant, $q_i$ and $q_j$ are the charges 
 
 ​                                                                                                                                  
 
-<center>![Untitled](/project-campfire-website/assets/images/2022-12-18/Untitled.png)</center>
+```scss
+{:refdef: style="text-align: center;"}
+```
 
+![Untitled](/project-campfire-website/assets/images/2022-12-18/Untitled.png)
 
+```scss
+{: refdef}
+```
 
 In equation 2 above, $\bf{v_1'}$ and $\bf{v_2'}$ correspond to the final velocities of the two particles, $\bf{v_1}$ and $\bf{v_2}$ correspond to the velocities of the two particles before the collision, $m_i$ and $m_j$ are the masses of the two particles, $\bf{x_1}$ and $\bf{x_2}$ are the position vectors, and $<a,b> = a \cdot b$.
 
