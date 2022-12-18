@@ -28,9 +28,13 @@ $$
 
 In equation 1 above, k is Coulomb’s constant, $q_i$ and $q_j$ are the charges of particle i and particle j, $\bf{r_i}$ and $\bf{r_j}$ are the position vectors of particle i and particle j, and $\parallel{\bf{r_j}} - {\bf{r_i}}\parallel$ is the magnitude of the vector ${\bf{r_j}} - {\bf{r_i}}$. Importantly, as with Newton’s law of gravity, Coulomb’s law is an inverse-square law, which allows the total force on a particle to be approximated by considering a subset of nearby particles. There are several important differences between Newton’s law of gravity and Coulomb’s law. First, unlike the mass of a particle, the charge of a particle can only take integer values, and the charge can be positive or negative. Second, while the gravitational force between two particles is only attractive, the electrostatic force between two particles can be attractive or repulsive. Specifically, if two particles have charges with the same sign, then the electrostatic force between the particles will be repulsive. Otherwise, if the two particles have charges with opposite signs, then the electrostatic force between the particles will be attractive.
 
-​                 Two particles collide when the sum of their radii is less than the distance between the particles. One important property of all collisions is that the total momentum (momentum is the product of a particle’s mass and its velocity vector) must be conserved (the sum of the momenta of the particles before the collision must equal the sum of the momenta after the collision). For the sake of simplicity, in this project, it was assumed that the collisions were elastic, which means that energy is conserved across the collision. Using the conservation of momentum and the conservation of energy, it is possible to derive expressions for the final velocities of two particles after a collision$^2$:                                                                                                                                        
+​                 Two particles collide when the sum of their radii is less than the distance between the particles. One important property of all collisions is that the total momentum (momentum is the product of a particle’s mass and its velocity vector) must be conserved (the sum of the momenta of the particles before the collision must equal the sum of the momenta after the collision). For the sake of simplicity, in this project, it was assumed that the collisions were elastic, which means that energy is conserved across the collision. Using the conservation of momentum and the conservation of energy, it is possible to derive expressions for the final velocities of two particles after a collision$^2$: 
 
-![Untitled](/project-campfire-website/assets/images/2022-12-18/Untitled.png)
+​                                                                                                                                  
+
+<center>![Untitled](/project-campfire-website/assets/images/2022-12-18/Untitled.png)</center>
+
+
 
 In equation 2 above, $\bf{v_1'}$ and $\bf{v_2'}$ correspond to the final velocities of the two particles, $\bf{v_1}$ and $\bf{v_2}$ correspond to the velocities of the two particles before the collision, $m_i$ and $m_j$ are the masses of the two particles, $\bf{x_1}$ and $\bf{x_2}$ are the position vectors, and $<a,b> = a \cdot b$.
 
@@ -142,7 +146,7 @@ Figure 2. For each concentration region, the area of the light blue region is ca
 
 ​              Recall, the collision operation is non-associative, and the reaction operation has inherent dependencies due to the fact that a particle can only react once. During the simulation of collisions and reactions, each particle can affect a local neighborhood of particles (in this case, the neighborhood of a particle is defined to be all of the particles that are currently colliding with it). To eliminate the dependency of this sub-routine on scheduling, it was necessary to ensure that the total neighborhood for each processor (the union of the neighborhoods of all the particles assigned to that processor) was disjoint from the total neighborhoods of all other processors. The partitioning scheme is described in Figure 3 below.
 
-![Figure 3. A 3x3 example of the partitioning scheme for the collisions and reactions sub-routine.](/project-campfire-website/assets/images/2022-12-18/Untitled%203.png)
+<center>![Figure 3. A 3x3 example of the partitioning scheme for the collisions and reactions sub-routine.](/project-campfire-website/assets/images/2022-12-18/Untitled%203.png)</center>
 
 Figure 3. A 3x3 example of the partitioning scheme for the collisions and reactions sub-routine.
 
